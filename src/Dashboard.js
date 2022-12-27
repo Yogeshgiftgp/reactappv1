@@ -1,8 +1,8 @@
 import Header from "./Header";
 import { useEffect, useState } from "react";
 import AuthUser from "./AuthUser";
-import { Table } from "react-bootstrap";
-import Modal from "./Component/UpdateModal"
+import { Button, Form, Modal, Table } from "react-bootstrap";
+// import Modal from "./Component/UpdateModal"
 
 
 
@@ -15,7 +15,7 @@ function Dashboard() {
 
     const [name, setName] = useState();
     const [email, setEmail] = useState();
-
+    const [userId, setUserId]= useState();
     
     useEffect(() => {
 
@@ -32,19 +32,29 @@ function Dashboard() {
             setData(resp.data.users)
             setName(resp.data.user[0].name) 
             setEmail(resp.data.users[0].email)
+            setUserId(resp.data.users[0].id)
             
         })
     }
 
-    function UpdateUsers(id,name,email) {
-        // alert("Are You Want Sure Update Record Number " + id);
-        //  window.emailtoupdate = email;
-        //  window.nametoupdate = name;    
-         console.log("testing data for api",data)
-        setName(name);
-       setEmail(email);
 
+    function SelectUser(id,name,email){
+        alert("Are You Want Sure Update Record Number " + id);
+        setName(name);
+        setEmail(email);
+        setUserId(id);
+    }
+
+    function UpdateUsers() {
+       
+        let updateUserItem = {name,email,userId}
+         console.log("testing data for api",updateUserItem)
+       
+       http.put('/updateuser/' +userId, {name:name,email:email}).then((res)=>{
+        console.log(res);
         
+       })
+       GetAllUsers();  
         
     }
 
@@ -91,7 +101,7 @@ function Dashboard() {
                                 <td>{item.name}</td>
                                 <td>{item.email}</td>
                                 <td>{item.created_at}</td>
-                                <td><button onClick={() => {setShow(true); UpdateUsers(item.id,item.name,item.email)}}>update</button> </td>
+                                <td><button onClick={() => {setShow(true); SelectUser(item.id,item.name,item.email)}}>update</button> </td>
                                 <td><button onClick={() => (DeleteUsers(item.id))}>Delete</button> </td>
 
                             </tr>
@@ -105,6 +115,44 @@ function Dashboard() {
 
                 </tbody>
             </Table>
+
+            <Modal show={show} onHide={handleClose} >
+        <Modal.Header closeButton>
+          <Modal.Title>Update User </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>User Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Name"
+               value={name}
+               onChange={(e)=>setName(e.target.value)}
+                autoFocus
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
+                autoFocus
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={UpdateUsers}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
                         
         </div>
 
